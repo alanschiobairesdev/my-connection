@@ -4,20 +4,21 @@ module.exports = (() => {
     dotenv.config();
     const config = {
         options: {
-            user: process.env.PG_USER,
-            host: process.env.PG_URL,
-            database: process.env.PG_DATABASE,
-            password: process.env.PG_PASSWORD,
-            port: process.env.PG_PORT || 5432,
+            connectionLimit : process.env.CON_LIMIT || 10,
+            user: process.env.CON_USER,
+            host: process.env.CON_URL,
+            database: process.env.CON_DATABASE,
+            password: process.env.CON_PASSWORD,
+            port: process.env.CON_PORT || 3306,
             ssl: false
         },
-        schema: process.env.PG_SCHEMA,
-        log: process.env.PG_LOG == 'true'
+        schema: process.env.CON_SCHEMA,
+        log: process.env.CON_LOG == 'true'
     };
-    if (process.env.PG_SSL == 'true') {
+    if (process.env.CON_SSL == 'true') {
         config.options.ssl = true;
     }
-    if (process.env.PG_REJECT_UNHAUTHORIZED == "false") {
+    if (process.env.CON_REJECT_UNHAUTHORIZED == "false") {
         config.options.ssl = { rejectUnauthorized: false };
     }
 

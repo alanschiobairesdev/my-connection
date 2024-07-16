@@ -10,34 +10,34 @@ class QueryBuilder {
 
 		for (let i = 0; i < keys.length; i++) {
 			myQuery += '' + keys[i] + (i < keys.length - 1 ? ',' : ')');
-			values += ' $' + (i + 1) + (i < keys.length - 1 ? ',' : ')');
+			values += ' ? ' + (i < keys.length - 1 ? ',' : ')');
 		}
 		let arrayValues = Object.keys(params).map(function (key) {
 			return params[key];
 		});
 		myQuery = myQuery.concat(values);
-		myQuery = myQuery.concat(' RETURNING *');
+		// myQuery = myQuery.concat(' RETURNING *');
 
 		return {
 			query: myQuery,
 			values: arrayValues
 		};
 	}
-	static update(tableName, params) {
+	static update(tableName, params, primaryKey) {
 		let myQuery = `UPDATE ${config.schema}.${tableName}  SET `;
-		let keys = Object.keys(params).filter(k => k != 'id');
+		let keys = Object.keys(params).filter(k => k != primaryKey);
 		let vals = [];
 		for (let i = 0; i < keys.length; i++) {
-			if (keys[i] != 'id') {
-				myQuery += '' + (keys[i] + " = " + ' $' + (i + 1)) + (i < keys.length - 1 ? ',' : '');
+			if (keys[i] != primaryKey) {
+				myQuery += '' + (keys[i] + " = " + ' ? ' + (i < keys.length - 1 ? ',' : ''));
 				vals.push(params[keys[i]])
 			}
 		}
 
-		myQuery += " where id = $" + (vals.length + 1);
+		myQuery +=` where ${primaryKey} = ? `;
 		
-		myQuery = myQuery.concat(' RETURNING *');
-		vals.push(params.ID)
+		// myQuery = myQuery.concat(' RETURNING *');
+		vals.push(params[primaryKey])
 
 		return {
 			query: myQuery,
@@ -53,7 +53,7 @@ class QueryBuilder {
 
 		for (let i = 0; i < keys.length; i++) {
 			let key = keys[i];
-			myQuery += '' + (table.getColumn(key)) + ( useLike && useLike[key] ? " LIKE " : " = ") + ' $' + (i + 1) + (i < keys.length - 1 ? ' and ' : '');
+			myQuery += '' + (table.getColumn(key)) + ( useLike && useLike[key] ? " LIKE " : " = ") + ' ?'  + (i < keys.length - 1 ? ' and ' : '');
 			vals.push(properties[key]);
 		}
 
@@ -71,11 +71,11 @@ class QueryBuilder {
 	}
 	static delete(table, id) {
 
-		return { query: `DELETE FROM ${config.schema}.${table.tableName} where ${table.getColumn('id')}  =  $1`, vals: [id || table.id] };
+		return { query: `DELETE FROM ${config.schema}.${table.tableName} where ${table.primaryKey}  =  ?`, vals: [id || table.primaryKeyValue] };
 	}
 	static get(table) {
 
-		return { query: `SELECT * FROM ${config.schema}.${table.tableName} where ${table.getColumn('id')}  =  $1`, vals: [table.id] };
+		return { query: `SELECT * FROM ${config.schema}.${table.tableName} where ${table.primaryKey}  =  ?`, vals: [table.primaryKeyValue] };
 	}
 	static list(tableName) {
 

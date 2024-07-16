@@ -12,14 +12,15 @@ WIP
 Uses `.env`  to aquire credentials.
 |Prop|Required| Default | Description |
 | ------------ | ------------ | ------------ | ------------ |
-|PG_USER| Required | | |
-|PG_URL| Required |  | |
-|PG_DATABASE |Required  | | |
-|PG_PASSWORD |Required  | | |
-|PG_PORT | Optional |5432 | |
-|PG_SSL | Optional |false | |
-|PG_REJECT_UNHAUTHORIZED | Optional | | |
-|PG_LOG | Optional |false | |
+|CON_USER| Required | | |
+|CON_URL| Required |  | |
+|CON_DATABASE |Required  | | |
+|CON_PASSWORD |Required  | | |
+|CON_PORT | Optional |3306 | |
+|CON_SSL | Optional |false | |
+|CON_REJECT_UNHAUTHORIZED | Optional | | |
+|CON_LOG | Optional |false | |
+| CON_LIMIT| Optional |10 | |
 
 
 ## Usage
@@ -30,12 +31,12 @@ Using in 3 Steps
 
 
 ```
-PG_USER=postgres
-PG_URL=localhost
-PG_DATABASE=postgres
-PG_PASSWORD=postgres
-PG_SCHEMA=mercado_alencar
-PG_LOG=true
+CON_USER=postgres
+CON_URL=localhost
+CON_DATABASE=postgres
+CON_PASSWORD=postgres
+CON_SCHEMA=mercado_alencar
+CON_LOG=true
 ```
 
 2. Model

@@ -1,7 +1,7 @@
 {
-  "name": "@schirrel/pg-connection",
+  "name": "@schirrel/my-connection",
   "version": "0.0.34",
-  "description": "a simple pg wrapper",
+  "description": "a simple my wrapper",
   "main": "index.js",
   "scripts": {
     "test": "ava"
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "dotenv": "^8.2.0",
-    "pg": "^7.4.2"
+    "mysql": "^2.18.1"
   },
   "homepage": "https://github.com/schirrel/pg-connection#readme",
   "publishConfig": {

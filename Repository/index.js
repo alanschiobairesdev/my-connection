@@ -6,7 +6,7 @@ const Logger = require("../Utils/Logger");
 class Repository {
   constructor(_table) {
     if (!_table instanceof Model) {
-      throw Error("Table muste be a instance of Model");
+      throw Error("Table must be a instance of Model");
     }
     this.table = _table;
     this.tableName = new _table().tableName;
@@ -14,7 +14,7 @@ class Repository {
 
   async persist(persistObject) {
     try {
-      const res = await Database.query(
+      const res = Database.query(
         persistObject.query,
         persistObject.values
       );
@@ -27,17 +27,19 @@ class Repository {
   }
 
   async get(id) {
-    let query = QueryBuilder.get(new this.table({ id: id }));
+    const currentModel = new this.table();
+    currentModel.setPrimaryKeyValue(id)
+    let query = QueryBuilder.get(currentModel);
     const res = await Database.query(query.query, query.vals);
-    let response = await res.rows[0];
+    let response = await res[0];
     let model = new this.table();
     model.setValues(response || {}, true);
     return model;
   }
 
   async delete(id) {
-    let query = QueryBuilder.delete(new this.table({ id: id }));
-    const res = await Database.query(query.query, query.vals);
+    let query = QueryBuilder.delete(new this.table({ id }));
+    const res = Database.query(query.query, query.vals);
     let deleted = await res.rowCount;
     return deleted;
   }
@@ -62,7 +64,7 @@ class Repository {
       let obj = model.createPersistObject();
       let toPersist = QueryBuilder.insert(this.tableName, obj);
       return await this.persist(toPersist);
-    } catch (eerr) {
+    } catch (err) {
       Logger.error(err);
       err.erro = "ERRO";
       return err;
@@ -71,9 +73,9 @@ class Repository {
   async _update(model) {
     try {
       let obj = model.createUpdateObject();
-      let toPersist = QueryBuilder.update(this.tableName, obj);
+      let toPersist = QueryBuilder.update(this.tableName, obj, model.primaryKey);
       return await this.persist(toPersist);
-    } catch (eerr) {
+    } catch (err) {
       Logger.error(err);
       err.erro = "ERRO";
       return err;
@@ -93,7 +95,7 @@ class Repository {
   async search(properties = {}, options = {}) {
     try {
       const params = QueryBuilder.search(new this.table(), properties, options);
-      const res = await Database.query(params.query, params.values);
+      const res = Database.query(params.query, params.values);
       let response = await res.rows;
       let result = response.map((row) => new this.table(row, true));
       return result;
@@ -112,9 +114,8 @@ class Repository {
     delete properties.size;
 
     let options = {
-      query: ` LIMIT ${pageParams.size} OFFSET ${
-        pageParams.size * (pageParams.page - 1)
-      }`,
+      query: ` LIMIT ${pageParams.size} OFFSET ${pageParams.size * (pageParams.page - 1)
+        }`,
       values: [],
     };
 
